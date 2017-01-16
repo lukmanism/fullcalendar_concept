@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<link href='dist/fullcalendar.css' rel='stylesheet' />
+<link href='dist/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='node_modules/moment/moment.js'></script>
+<script src='node_modules/jquery/dist/jquery.js'></script>
+<script src='dist/fullcalendar.js'></script>
+<script>
+/*
+#3366FF
+#6633FF
+#CC33FF
+#FF33CC
+#FF3366
+#FF6633
+#FFCC33
+#CCFF33
+#66FF33
+#33FF66
+#33FFCC
+#33CCFF
+#003DF5
+#002EB8
+#F5B800
+#B88A00
+*/
+	$(document).ready(function() {
+
+		var eventClick = function (calEvent, jsEvent, view){
+				var allDay = calEvent.allDay,
+					color = calEvent.color,
+					end = calEvent.end.format(),
+					start = calEvent.start.format(),
+					title = calEvent.name,
+					target = $(jsEvent.currentTarget).parents('.fc-view-container'),
+					info = $('<div class="info-bubble"/>'),
+					content = '<div class="info-box"><button class="close-bttn"><span>×</span></button><h3><span class="fc-event-dot" style="background-color:'+ color +';"></span> '+ title +'</h3><dl><dt>All Day?:</dt><dd>'+ allDay +'</dd><dt>Start Date:</dt><dd>'+ start +'</dd><dt>End Date:</dt><dd>'+ end +'</dd></dl></div>';
+
+					target.append(info.html(content));
+
+					$('.close-bttn', target).off().on('click', function(e){
+						e.preventDefault();
+						$('.info-bubble', target).remove();
+					});
+			},
+			addEvent = function (start, end){
+				var el = this.el.parents('.calendar'),
+					target = $('.fc-view-container', el);
+				if($('.info-bubble', target).length === 0){
+					var info = $('<div class="info-bubble"/>'),
+						content = '<div class="info-box"><button class="close-bttn"><span>×</span></button><h3>Add as a new entry?</h3><input type="text" name="title" placeholder="insert title" value="" class="title"><button class="save"><span class="fa fa-check"></span>Save</button></div>';
+
+						target.append(info.html(content));
+
+					$('input', target).focus();
+
+					$('.save').off().on('click', function(){
+						var title = $('.title').val(),
+							eventData;
+						console.log('events', events)
+						if(title){
+							eventData = {
+								title: title,
+								start: start,
+								end: end,
+								color: '#B88A00'
+							};
+							el.fullCalendar('renderEvent', eventData, true); // stick? = true
+						}
+						el.fullCalendar('unselect');
+						$('.info-bubble', target).remove();
+					});
+
+					$('.close-bttn', target).off().on('click', function(e){
+						e.preventDefault();
+						$('.info-bubble', target).remove();
+					});				
+				}
+			},
+			eventDrop = function(event, delta, revertFunc){
+				console.log('eventDrop: ', event)
+			},
+			eventResize = function(event, delta, revertFunc){
+				console.log('eventResize: ', event)
+			},
+			eventRender = function(event, element){
+				$('.fc-title', element).html(event.name);
+			},
+			views =  {
+				week: {
+					columnFormat: 'ddd D'
+				}
+			}
+	
+
+		// var events = [
+		// 		{name: 'Phase 1', start: '2016-12-31 00:00:00+00', end: '2017-01-01 12:00:00+00', color: '#3366FF'},
+		// 		{name: 'Phase 2', start: '2016-12-28 16:00:00+00', end: '2016-12-29 16:00:00+00', color: '#6633FF'},
+		// 		{name: 'Phase 3', start: '2016-12-30 16:00:00+00', end: '2016-12-30 17:00:00+00', color: '#CC33FF'},
+		// 		{name: 'Phase 4', start: '2016-11-30 18:00:00+00', end: '2016-12-01 19:00:00+00', color: '#FF33CC'},
+		// 		{name: 'Phase 5', start: '2016-12-01 16:00:00+00', end: '2016-12-02 18:00:00+00', color: '#FF3366'},
+		// 		{name: 'Phase 6', start: '2017-01-02 16:00:00+00', end: '2017-01-03 16:00:00+00', color: '#FF6633'},
+		// 		{name: 'Phase 7', start: '2017-01-03 16:00:00+00', end: '2017-01-04 16:00:00+00', color: '#FFCC33'},
+		// 		{name: 'Phase 8', start: '2017-01-04 16:00:00+00', end: '2017-01-05 16:00:00+00', color: '#CCFF33'},
+		// 		{name: 'Phase 9', start: '2017-01-05 16:00:00+00', end: '2017-01-06 16:00:00+00', color: '#66FF33'},
+		// 		{name: 'Phase 10', start: '2017-01-07 16:00:00+00', end: '2017-01-08 16:00:00+00', color: '#33FF66'},
+		// 		{name: 'Phase 11', start: '2017-01-08 16:00:00+00', end: '2017-01-09 16:00:00+00', color: '#33FFCC'},
+		// 		{name: 'Phase 12', start: '2017-01-09 16:00:00+00', end: '2017-01-10 16:00:00+00', color: '#33CCFF'},
+		// 		{name: 'Phase 13', start: '2017-01-06 16:00:00+00', end: '2017-01-07 16:00:00+00', color: '#003DF5'},
+		// 	],
+		var events = [
+				{"name":"Phase 1","color":"#CC33FF","is_billable":true,"start":"2016-01-01 06:00:00+00","end":"2016-01-01 07:30:00+00","project_id":1},
+				{"name":"Phase 2","color":"#FF3366","is_billable":true,"start":"2016-12-28 16:00:00+00","end":"2016-12-29 16:00:00+00","project_id":1},
+				{"name":"Phase 3","color":"#FF6633","is_billable":true,"start":"2016-12-30 16:00:00+00","end":"2016-12-31 16:00:00+00","project_id":1},
+				{"name":"Phase 4","color":"#FFCC33","is_billable":true,"start":"2016-11-30 16:00:00+00","end":"2016-12-01 16:00:00+00","project_id":1},
+				{"name":"Phase 5","color":"#CCFF33","is_billable":true,"start":"2016-12-01 16:00:00+00","end":"2016-12-02 18:00:00+00","project_id":1},
+				{"name":"Phase 6","color":"#66FF33","is_billable":true,"start":"2017-01-02 16:00:00+00","end":"2017-01-03 16:00:00+00","project_id":1},
+				{"name":"Phase 7","color":"#33FF66","is_billable":true,"start":"2017-01-03 16:00:00+00","end":"2017-01-04 16:00:00+00","project_id":1},
+				{"name":"Phase 8.0","color":"#33FFCC","is_billable":true,"start":"2017-01-04 16:00:00+00","end":"2017-01-05 16:00:00+00","project_id":1}
+			],
+			cal_after = $('#cal_after'),
+			cal_now = $('#cal_now'),
+			curr_date = moment().utc().format(),
+			next_date = moment.utc(curr_date).add(1, 'months').format(),
+			header = {
+				left: 'title',
+				center: '',
+				right: ''
+			};
+
+		cal_now.fullCalendar({
+			header: header,
+			footer: {
+				left: 'prev,next today',
+				center: '',
+				right: ''
+			},
+			viewRender: function (view, element) {
+				var diff = moment(view.intervalStart).clone();
+				cal_after.fullCalendar('changeView', view.type);
+				switch(view.type){
+					case "month":
+						diff = diff.add(1, 'months');
+					break;
+					case "agendaWeek":
+					case "listWeek":
+						diff = diff.add(7, 'days');
+					break;
+				}
+				cal_after.fullCalendar('gotoDate', diff);
+			},
+			contentHeight: 320,
+			defaultDate: curr_date,
+			eventOverlap: false,
+			navLinks: false, // can click day/week names to navigate views
+			editable: true,
+			fixedWeekCount: false,
+			selectable: true,
+			selectHelper: true,
+			allDaySlot: false,
+			events: events,
+			select: addEvent,
+			eventClick: eventClick,
+			eventDrop: eventDrop,
+			eventResize: eventResize,
+			eventRender: eventRender,
+			views: views
+		});
+
+
+		cal_after.fullCalendar({
+			header: header,
+			footer: {
+				left: '',
+				center: '',
+				right: 'month,agendaWeek,listWeek'
+			},
+			viewRender: function (view, element) {
+				cal_now.fullCalendar('changeView', view.type);
+			},
+			contentHeight: 320,
+			defaultDate: next_date,
+			eventOverlap: false,
+			navLinks: false, // can click day/week names to navigate views
+			editable: true,
+			fixedWeekCount: false,
+			selectable: true,
+			selectHelper: true,
+			allDaySlot: false,
+			events: events,
+			select: addEvent,
+			eventClick: eventClick,
+			eventDrop: eventDrop,
+			eventResize: eventResize,
+			eventRender: eventRender,
+			views: views
+		});
+
+		
+	});
+
+</script>
+<style>
+
+	body {
+		margin: 40px 10px;
+		padding: 0;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+	.fc-view-container {
+		position: relative;
+	}
+	.calendars {
+		width: 740px;
+		margin: 0 auto;
+	}
+
+	.calendar {
+		max-width: 900px;
+		margin: 0 auto;
+		width: 49%;
+	}
+	#cal_after {
+		float: right;
+	}
+	#cal_now {
+		float: left;
+	}
+	.info-bubble {
+		position: absolute;
+		width: 100%;
+		top: 0;
+		background-color: rgba(51, 51, 51, 0.8);
+		z-index: 1;
+		height: 100%;
+	}
+	.info-bubble table {
+		border-spacing: 0;
+		border-collapse: collapse;
+	}
+	.info-box {
+	    width: 50%;
+	    margin: 0 auto;
+	    background-color: rgba(255, 255, 255, 0.8);
+	    border-radius: 6px;
+	    padding: 10px;
+	    top: 25%;
+	    position: relative;
+	}
+	.info-box .close-bttn {
+	    background: rgba(245, 245, 245, 0.9);
+	    border: 0px;
+	    width: 24px;
+	    height: 24px;
+	    padding: 0px;
+	    border-radius: 12px;
+	    position: absolute;
+	    top: -12px;
+	    right: -12px;
+	    color: rgba(51, 51, 51, 0.6);
+	    font-size: 24px;
+	    line-height: 24px;
+	    border: 1px solid rgba(51, 51, 51, 0.6);
+	}
+	.calendars-selector td{
+		overflow: visible!important; // override event layers td visibility
+	}
+</style>
+</head>
+<body>
+<div class="calendars">
+	<div class="calendar" id='cal_now'></div>
+	<div class="calendar" id='cal_after'></div>
+</div>
+</body>
+</html>
